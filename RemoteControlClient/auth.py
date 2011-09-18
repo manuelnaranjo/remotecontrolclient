@@ -49,5 +49,4 @@ class ForwardOnlyUserAuth(userauth.SSHUserAuthClient):
         return self.publicKey
 
     def getPrivateKey(self):
-        return defer.succeed(keys.getPrivateKeyObject(self.id_file))
-
+        return defer.succeed(keys.Key.fromFile(self.id_file).keyObject)
