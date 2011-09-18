@@ -17,4 +17,4 @@ mv dist/$1-$2.tar.gz ../${lowername}_$2.orig.tar.gz
 
 rm -rf dist build
 
-fakeroot dpkg-buildpackage -i.git -uc -us
+fakeroot dpkg-buildpackage -i.git -S -sa
