@@ -1,1 +1,2 @@
 prune .git
+prune debian
