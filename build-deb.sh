@@ -11,7 +11,7 @@ python setup.py clean
 python setup.py sdist
 python setup.py clean
 
-VERSION=$(python -c 'from RemoteControlClient import __version__; print __version__')
+VERSION=$(python -c "from ${1} import __version__; print __version__")
 
 typeset -l lowername
 lowername=$1
