@@ -1,3 +1,9 @@
+remotecontrolclient (0.1.1-1aircable1) natty; urgency=low
+
+  * removed debian from the orig file 
+
+ -- Manuel Francisco Naranjo <manuel@aircable.net>  Sun, 18 Sep 2011 17:00:25 -0700
+
 remotecontrolclient (0.1.0-1aircable2) natty; urgency=low
 
   * added python-setuptools missing
