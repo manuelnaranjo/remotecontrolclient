@@ -1,2 +1,5 @@
 prune .git
 prune debian
+prune *egg-info
+prune PKG-INFO
+prune setup.cfg
