@@ -5,6 +5,7 @@
 from twisted.conch.error import ConchError
 from twisted.conch.ssh import connection, forwarding
 from twisted.python import log
+from twisted.internet import reactor
 
 __all__=['ForwardOnlySSHConnection', 'SSHListenClientForwardingChannel']
 
@@ -25,6 +26,7 @@ class ForwardOnlySSHConnection(connection.SSHConnection):
         global conn
         conn = self
         self.remoteForwards = {}
+        self.pending = []
         if not isinstance(self, connection.SSHConnection):
             # make these fall through
             del self.__class__.requestRemoteForwarding
@@ -38,6 +40,7 @@ class ForwardOnlySSHConnection(connection.SSHConnection):
         '''
         will get called when the remote forwarding request gets started
         '''
+        self.pending.append(hostport)
         data = forwarding.packOpen_direct_tcpip(('0.0.0.0',remotePort),hostport)
         d = self.sendGlobalRequest('tcpip-forward', data, wantReply=1)
         log.msg('requesting remote forwarding %s:%s' %(remotePort, hostport))
@@ -48,7 +51,7 @@ class ForwardOnlySSHConnection(connection.SSHConnection):
         '''
         remote port forwarding accepted
         '''
-
+        self.pending.remove(hostport)
         log.msg('accepted remote forwarding %s:%s' % (remotePort, hostport))
         self.remoteForwards[remotePort] = hostport
         log.msg(repr(self.remoteForwards))
@@ -57,8 +60,12 @@ class ForwardOnlySSHConnection(connection.SSHConnection):
         '''
         remote port forwarding failed
         '''
+        self.pending.remove(hostport)
         log.msg('remote forwarding %s:%s failed' % (remotePort, hostport))
         log.msg(f)
+        if len(self.pending) == 0 and len(self.remoteForwards) == 0:
+            log.msg('failed with all the forwards, restart')
+            reactor.stop()
 
     def cancelRemoteForwarding(self, remotePort):
         '''
